@@ -200,8 +200,8 @@ plt.figure(figsize=(10,10))
 m = Basemap(llcrnrlon=lon_min, llcrnrlat=lat_min, urcrnrlon=lon_max, urcrnrlat=lat_max,
             lat_0=lat_center, lon_0=lon_center, projection='merc')
 
-m.readshapefile('/Users/mattlangford/Downloads/cb_2018_us_state_500k/cb_2018_us_state_500k', 'states', drawbounds=True)
-m.readshapefile('/Users/mattlangford/Downloads/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
+m.readshapefile('assets/cb_2018_us_state_500k/cb_2018_us_state_500k', 'states', drawbounds=True)
+m.readshapefile('assets/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
 
 y, x = m(cloud_lon, cloud_lat)
 plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
