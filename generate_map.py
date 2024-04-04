@@ -27,10 +27,6 @@ def distance_contact(
     location: astropy.coordinates.EarthLocation,
     time: astropy.time.Time
 ) -> u.Quantity:
-
-    radius_sun = astropy.constants.R_sun
-    radius_moon = 1737.4 * u.km
-
     coordinate_sun = astropy.coordinates.get_sun(time)
     coordinate_moon = astropy.coordinates.get_body("moon", time)
 
@@ -215,5 +211,5 @@ cbar = plt.colorbar(fraction=0.03)
 cbar.set_label('Sky Cover', rotation=270)
 
 plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
-plt.savefig('cover.png')
+plt.savefig('cover.png', bbox_inches="tight")
 plt.show()
