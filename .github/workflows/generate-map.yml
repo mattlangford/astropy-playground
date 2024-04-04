@@ -1,0 +1,29 @@
+name: Generate Map
+
+on:
+  # Run during normal hours
+  schedule:
+    - cron: '0,30 6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * *'
+  # Allow manual execution
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      # Give the default GITHUB_TOKEN write permission to commit and push the
+      # added or changed files to the repository.
+      contents: write
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    - run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - run: python generate_map.py
+    - uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: Automated map update
+
