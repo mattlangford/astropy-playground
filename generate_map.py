@@ -119,7 +119,7 @@ lat_max, lon_max = 46, -70
 lat_center = lat_min + (lat_max - lat_min) / 2.0
 lon_center = lon_min + (lon_max - lon_min) / 2.0
 
-points = 5
+points = 50
 lats = np.linspace(lat_min, lat_max, points)
 lons = np.linspace(lon_min, lon_max, points)
 lat, lon = np.meshgrid(lats, lons)
@@ -132,6 +132,7 @@ ts = np.linspace(center_time - dt, center_time + dt, count)
 for t in ts:
     locations = astropy.coordinates.EarthLocation(lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m)
     overlap = overlap_percent(locations, t)
+    print(np.max(overlap))
     indicies = overlap > 0.999
     for x, y in zip(lat[indicies], lon[indicies]):
         centers.append([x, y])
@@ -139,12 +140,12 @@ for t in ts:
     
 centers = np.array(centers)
 print(f"{len(centers)} totality points loaded")
-plt.scatter(centers[:, 1], centers[:, 0])
-
-locations = astropy.coordinates.EarthLocation(lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m)
-overlap = distance_contact(locations, center_time)
-plt.contour(lon, lat, overlap, 20)
-plt.show()
+# plt.scatter(centers[:, 1], centers[:, 0])
+# 
+# locations = astropy.coordinates.EarthLocation(lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m)
+# overlap = distance_contact(locations, center_time)
+# plt.contour(lon, lat, overlap, 20)
+# plt.show()
 
 # Query weather across the map
 points = 12
@@ -178,6 +179,7 @@ for i, c in enumerate(centers):
         t0 = time.time()
 
 center_covers = np.array(center_covers)
+
 # Requery anything that timed out
 missing = np.sum(cover == 100)
 coords = np.where(cover == 100)
