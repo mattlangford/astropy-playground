@@ -132,7 +132,6 @@ ts = np.linspace(center_time - dt, center_time + dt, count)
 for t in ts:
     locations = astropy.coordinates.EarthLocation(lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m)
     overlap = overlap_percent(locations, t)
-    print(np.max(overlap))
     indicies = overlap > 0.999
     for x, y in zip(lat[indicies], lon[indicies]):
         centers.append([x, y])
