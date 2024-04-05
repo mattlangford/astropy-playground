@@ -24,8 +24,8 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - run: python generate_map.py
-        env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      env:
+        GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
     - uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: Automated map update
