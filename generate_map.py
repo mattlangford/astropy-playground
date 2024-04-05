@@ -135,12 +135,6 @@ for t in ts:
     
 centers = np.array(centers)
 print(f"{len(centers)} totality points loaded")
-# plt.scatter(centers[:, 1], centers[:, 0])
-# 
-# locations = astropy.coordinates.EarthLocation(lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m)
-# overlap = distance_contact(locations, center_time)
-# plt.contour(lon, lat, overlap, 20)
-# plt.show()
 
 # Query weather across the map
 points = 12
@@ -160,7 +154,8 @@ for i in range(cloud_lat.shape[0]):
     for j in range(cloud_lat.shape[1]):
         cover[i, j] = query_sky_cover_safe(cloud_lat[i, j], cloud_lon[i, j], avg_t)
 
-weather_time = datetime.now()
+tz = pytz.timezone('EST')
+weather_time = datetime.now(tz) 
 
 # Query weather at each point within totality
 center_covers = []
