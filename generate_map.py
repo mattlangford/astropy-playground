@@ -217,14 +217,14 @@ center_traffic = np.array(center_traffic)
 print(center_traffic)
 
 # Plot the map, eclipse points, and weather
-
 plt.figure(figsize=(15, 15))
+
 # Lambert Conformal map of lower 48 states.
 m = Basemap(llcrnrlon=lon_min, llcrnrlat=lat_min, urcrnrlon=lon_max, urcrnrlat=lat_max,
             lat_0=lat_center, lon_0=lon_center, projection='merc')
 
 m.readshapefile('assets/cb_2018_us_state_500k/cb_2018_us_state_500k', 'states', drawbounds=True)
-#m.readshapefile('assets/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
+m.readshapefile('assets/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
 
 y, x = m(cloud_lon, cloud_lat)
 plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
@@ -234,9 +234,9 @@ mask = np.logical_and(center_covers < 100, center_traffic > 0)
 green_red = matplotlib.colors.LinearSegmentedColormap.from_list('gr',["g", "orange", "r"], N=256) 
 max_hours = 8.0
 edge_colors = green_red(center_traffic[mask] / max_hours)
-plt.scatter(y[mask], x[mask], c=center_covers[mask], s=75, cmap='Blues_r', vmin=0, vmax=100, edgecolors=edge_colors, linewidth=1.0, zorder=2)
+plt.scatter(y[mask], x[mask], c=center_covers[mask], s=75, cmap='Blues_r', vmin=0, vmax=100, edgecolors=edge_colors, linewidth=0.75, zorder=2)
 
-cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.5, 0.5))
+cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.8, 0.5))
 cbar.set_label('Traffic (hr)', rotation=270, labelpad=15)
 cbar = plt.colorbar(shrink=0.4)
 cbar.set_label('Sky Cover', rotation=270)
@@ -245,5 +245,5 @@ y, x = m(pit_lon, pit_lat)
 plt.plot(y, x, 'x', c='r')
 
 plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
-plt.savefig('cover.png', bbox_inches="tight")
+
 plt.show()
