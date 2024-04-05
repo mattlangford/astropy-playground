@@ -8,11 +8,15 @@ import astropy.constants
 import astropy.coordinates
 import pytz
 import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
+import matplotlib
 
 # Makes queries against the National Weather Service API to get cloud cover
 from datetime import datetime
 
 import time
+import googlemaps
+import os
 import urllib.request
 import urllib.error
 import json 
@@ -107,6 +111,28 @@ def query_sky_cover_safe(lat, lon, t):
         print(f"No data for {lat} {lon}")
         return 100
 
+
+gmaps = googlemaps.Client(key=os.environ['GOOGLE_API_KEY'])
+
+def get_travel_times(orig_lat, orig_lon, destinations, query_time):
+    results = []
+    s = ""
+    for i, dest in enumerate(destinations):
+        s += f"{dest[0]},{dest[1]}|"
+
+        # Can only make a handful of queries per call
+        if i + 2 < len(destinations) and (i == 0 or i % 20 != 0):
+            continue
+        s = s[:-1]
+        directions_result = gmaps.distance_matrix(f"{orig_lat},{orig_lon}", s, mode="driving", departure_time=query_time)
+        for element in directions_result['rows'][0]['elements']:
+            if 'duration_in_traffic' in element:
+                results.append((float(element['duration_in_traffic']['value']) * u.s).to(u.hr).value)
+            else:
+                results.append(0.0)
+        s = ""
+    return results
+
 # Generate points within totality along the path of the eclipse
 
 center_time = astropy.time.Time("2024-04-08 19:01:00")
@@ -182,28 +208,40 @@ for i, c in enumerate(centers):
     if center_covers[i] == 100:
         center_covers[i] = query_sky_cover_safe(c[0], c[1], center_ts[i])
 
+# Query weather at each point within totality
+center_traffic = []
+pit_lat, pit_lon = 40.4406, -79.9959
+center_traffic = get_travel_times(pit_lat, pit_lon, centers, datetime.now())
+center_traffic = np.array(center_traffic)
+print(center_traffic)
+
 # Plot the map, eclipse points, and weather
 
-from mpl_toolkits.basemap import Basemap
-
-plt.figure(figsize=(10,10))
+plt.figure(figsize=(15, 15))
 # Lambert Conformal map of lower 48 states.
 m = Basemap(llcrnrlon=lon_min, llcrnrlat=lat_min, urcrnrlon=lon_max, urcrnrlat=lat_max,
             lat_0=lat_center, lon_0=lon_center, projection='merc')
 
 m.readshapefile('assets/cb_2018_us_state_500k/cb_2018_us_state_500k', 'states', drawbounds=True)
-m.readshapefile('assets/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
+#m.readshapefile('assets/tl_2017_us_primaryroads/tl_2017_us_primaryroads', 'roads', drawbounds=True, linewidth=0.1)
 
 y, x = m(cloud_lon, cloud_lat)
 plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
 
 y, x = m(centers[:, 1], centers[:, 0])
-center_covers = np.array(center_covers)
-mask = center_covers < 100
-plt.scatter(y[mask], x[mask], c=center_covers[mask], s=50, cmap='Blues_r', vmin=0, vmax=100, edgecolors='black', linewidth=0.75, zorder=2)
+mask = np.logical_and(center_covers < 100, center_traffic > 0)
+green_red = matplotlib.colors.LinearSegmentedColormap.from_list('gr',["g", "orange", "r"], N=256) 
+max_hours = 8.0
+edge_colors = green_red(center_traffic[mask] / max_hours)
+plt.scatter(y[mask], x[mask], c=center_covers[mask], s=75, cmap='Blues_r', vmin=0, vmax=100, edgecolors=edge_colors, linewidth=1.0, zorder=2)
 
-cbar = plt.colorbar(fraction=0.03)
+cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.5, 0.5))
+cbar.set_label('Traffic (hr)', rotation=270, labelpad=15)
+cbar = plt.colorbar(shrink=0.4)
 cbar.set_label('Sky Cover', rotation=270)
+
+y, x = m(pit_lon, pit_lat)
+plt.plot(y, x, 'x', c='r')
 
 plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
 plt.savefig('cover.png', bbox_inches="tight")
