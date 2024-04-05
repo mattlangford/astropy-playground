@@ -154,7 +154,7 @@ for i in range(cloud_lat.shape[0]):
     for j in range(cloud_lat.shape[1]):
         cover[i, j] = query_sky_cover_safe(cloud_lat[i, j], cloud_lon[i, j], avg_t)
 
-tz = pytz.timezone('EDT')
+tz = pytz.timezone('America/New_York')
 weather_time = datetime.now(tz) 
 
 # Query weather at each point within totality
