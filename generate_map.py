@@ -134,8 +134,7 @@ def get_travel_times(orig_lat, orig_lon, destinations, query_time):
     return results
 
 # Generate points within totality along the path of the eclipse
-
-center_time = astropy.time.Time("2024-04-08 19:01:00")
+center_time = astropy.time.Time("2024-04-08 19:14:30")
 
 lat_min, lon_min = 36.0, -90.7
 lat_max, lon_max = 45.6, -70.0
@@ -147,7 +146,7 @@ lats = np.linspace(lat_min, lat_max, points)
 lons = np.linspace(lon_min, lon_max, points)
 lat, lon = np.meshgrid(lats, lons)
 
-dt = 28 * u.min
+dt = 16 * u.min
 count = 20
 centers = []
 center_ts = []
