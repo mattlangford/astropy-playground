@@ -244,5 +244,5 @@ y, x = m(pit_lon, pit_lat)
 plt.plot(y, x, 'x', c='r')
 
 plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
-
-plt.show()
+plt.savefig('cover.png', bbox_inches="tight")
+#plt.show()
