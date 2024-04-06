@@ -209,9 +209,10 @@ for i, c in enumerate(centers):
         center_covers[i] = query_sky_cover_safe(c[0], c[1], center_ts[i])
 
 # Query weather at each point within totality
+leave_time = astropy.time.Time("2024-04-08 10:00:00") # 6am the morning of
 center_traffic = []
 pit_lat, pit_lon = 40.4406, -79.9959
-center_traffic = get_travel_times(pit_lat, pit_lon, centers, datetime.now())
+center_traffic = get_travel_times(pit_lat, pit_lon, centers, leave_time)
 center_traffic = np.array(center_traffic)
 print(center_traffic)
 
@@ -245,13 +246,8 @@ plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
 
 y, x = m(centers[:, 1], centers[:, 0])
 mask = np.logical_and(center_covers < 100, center_traffic > 0)
-green_red = matplotlib.colors.LinearSegmentedColormap.from_list('gr',["g", "orange", "r"], N=256) 
-max_hours = 8.0
-edge_colors = 'k'#green_red(center_traffic[mask] / max_hours)
 plt.scatter(y[mask], x[mask], c=center_covers[mask], s=70, cmap='Blues_r', vmin=0, vmax=100, edgecolors='k', linewidth=0.4, zorder=2)
 
-#cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.8, 0.5))
-#cbar.set_label('Traffic (hr)', rotation=270, labelpad=15)
 cbar = plt.colorbar(shrink=0.4)
 cbar.set_label('Sky Cover', rotation=270)
 
