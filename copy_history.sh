@@ -29,3 +29,5 @@ for COMMIT_HASH in $(git rev-list --reverse $START_COMMIT^..); do
 done
 
 echo "Files copied successfully."
+
+ffmpeg -framerate 10 -i $DEST_DIR/img_%02d.png -final_delay 300 -loop 0 -y cover.gif
