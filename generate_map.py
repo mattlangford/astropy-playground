@@ -215,7 +215,22 @@ center_traffic = get_travel_times(pit_lat, pit_lon, centers, datetime.now())
 center_traffic = np.array(center_traffic)
 print(center_traffic)
 
+# Generate best targets for a few different hour drive
+best_targets = {}
+for time_hour in [1.0, 2.0, 3.0, 5.0, 8.0]:
+    time_mask = np.logical_and(center_traffic < time_hour, center_traffic > 0.0)
+    arr = np.ma.array(center_covers, mask=~time_mask)
+    if arr.any():
+        best_index = arr.argmin()
+        best_targets[time_hour] = {'index': best_index, 'center': centers[best_index], 'cover': center_covers[best_index]}
+
+print(best_targets)
+
 # Plot the map, eclipse points, and weather
+
+from mpl_toolkits.basemap import Basemap
+import matplotlib
+
 plt.figure(figsize=(15, 15))
 
 # Lambert Conformal map of lower 48 states.
@@ -243,6 +258,28 @@ cbar.set_label('Sky Cover', rotation=270)
 y, x = m(pit_lon, pit_lat)
 plt.plot(y, x, 'x', c='r')
 
+readme = ""
+
+readme += "The last sky cover plot generated:\n"
+readme += "![cover](cover.png)\n\n"
+readme += "The best targets by hour:\n"
+
+used_index = []
+for duration, target in best_targets.items():
+    readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][0]:.5f}) cover: {target['cover']}\n"
+
+    if target['index'] in used_index:
+        continue
+    used_index.append(target['index'])
+    center = target['center']
+
+    y, x = m(center[1], center[0])
+    plt.text(y, x, f"{duration:.0f}", horizontalalignment='center', verticalalignment='center',  fontsize=7)
+
 plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
+
+print(readme)
+with open('README.md', 'w') as file:
+    file.write(readme)
+
 plt.savefig('cover.png', bbox_inches="tight")
-#plt.show()
