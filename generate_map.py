@@ -263,7 +263,7 @@ readme += "The best targets by hour:\n"
 root_y, root_x = m(-81.0, 43.5)
 for duration in sorted(best_targets.keys(), key=lambda i: (best_targets[i]['center'][1], i)):
     target = best_targets[duration]
-    readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][0]:.5f}) cover: {target['cover']}\n"
+    readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][1]:.5f}) cover: {target['cover']}\n"
     center = target['center']
     y, x = m(center[1], center[0])
     text = plt.text(root_y, root_x, f'<{duration:.0f}hr\nsk={target["cover"]}', horizontalalignment='center', verticalalignment='center', 
