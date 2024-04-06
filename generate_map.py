@@ -218,7 +218,7 @@ print(center_traffic)
 
 # Generate best targets for a few different hour drive
 best_targets = {}
-for time_hour in [1.0, 2.0, 3.0, 5.0, 8.0]:
+for time_hour in [3.0, 5.0, 8.0, 10.0, 12.0, 15.0]:
     time_mask = np.logical_and(center_traffic < time_hour, center_traffic > 0.0)
     arr = np.ma.array(center_covers, mask=~time_mask)
     if arr.any():
