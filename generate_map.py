@@ -247,11 +247,11 @@ y, x = m(centers[:, 1], centers[:, 0])
 mask = np.logical_and(center_covers < 100, center_traffic > 0)
 green_red = matplotlib.colors.LinearSegmentedColormap.from_list('gr',["g", "orange", "r"], N=256) 
 max_hours = 8.0
-edge_colors = green_red(center_traffic[mask] / max_hours)
-plt.scatter(y[mask], x[mask], c=center_covers[mask], s=75, cmap='Blues_r', vmin=0, vmax=100, edgecolors=edge_colors, linewidth=0.75, zorder=2)
+edge_colors = 'k'#green_red(center_traffic[mask] / max_hours)
+plt.scatter(y[mask], x[mask], c=center_covers[mask], s=70, cmap='Blues_r', vmin=0, vmax=100, edgecolors='k', linewidth=0.4, zorder=2)
 
-cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.8, 0.5))
-cbar.set_label('Traffic (hr)', rotation=270, labelpad=15)
+#cbar = plt.colorbar(matplotlib.cm.ScalarMappable(norm=matplotlib.colors.Normalize(vmin=0, vmax=max_hours), cmap=green_red), shrink=0.4, anchor=(-0.8, 0.5))
+#cbar.set_label('Traffic (hr)', rotation=270, labelpad=15)
 cbar = plt.colorbar(shrink=0.4)
 cbar.set_label('Sky Cover', rotation=270)
 
@@ -264,16 +264,17 @@ readme += "The last sky cover plot generated:\n"
 readme += "![cover](cover.png)\n\n"
 readme += "The best targets by hour:\n"
 
-root_y, root_x = m(-81.0, 45.0)
+root_y, root_x = m(-81.0, 43.5)
 for duration in sorted(best_targets.keys(), key=lambda i: (best_targets[i]['center'][1], i)):
     target = best_targets[duration]
     readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][0]:.5f}) cover: {target['cover']}\n"
     center = target['center']
     y, x = m(center[1], center[0])
-    text = plt.text(root_y, root_x, f'<{duration:.0f}hr', horizontalalignment='center', verticalalignment='center', 
+    text = plt.text(root_y, root_x, f'<{duration:.0f}hr\nsk={target["cover"]}', horizontalalignment='center', verticalalignment='center', 
                     fontsize=7, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
     plt.plot([y, root_y], [x, root_x], c='r', linewidth=0.5)
     root_y += 100000
+    root_x += 50000
 
 print(readme)
 with open('README.md', 'w') as file:
