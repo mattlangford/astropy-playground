@@ -17,7 +17,7 @@ mkdir -p "$DEST_DIR"
 COUNTER=0
 
 # Loop through each commit in the range
-for COMMIT_HASH in $(git rev-list --reverse $START_COMMIT^..); do
+for COMMIT_HASH in $(git rev-list --reverse $START_COMMIT^.. --author mattlangford@users.noreply.github.com); do
   # Check out the file at the current commit
   git checkout $COMMIT_HASH -- $FILE_PATH
   
