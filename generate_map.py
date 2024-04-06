@@ -264,22 +264,20 @@ readme += "The last sky cover plot generated:\n"
 readme += "![cover](cover.png)\n\n"
 readme += "The best targets by hour:\n"
 
-used_index = []
-for duration, target in best_targets.items():
+root_y, root_x = m(-81.0, 45.0)
+for duration in sorted(best_targets.keys(), key=lambda i: (best_targets[i]['center'][1], i)):
+    target = best_targets[duration]
     readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][0]:.5f}) cover: {target['cover']}\n"
-
-    if target['index'] in used_index:
-        continue
-    used_index.append(target['index'])
     center = target['center']
-
     y, x = m(center[1], center[0])
-    plt.text(y, x, f"{duration:.0f}", horizontalalignment='center', verticalalignment='center',  fontsize=7)
-
-plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
+    text = plt.text(root_y, root_x, f'<{duration:.0f}hr', horizontalalignment='center', verticalalignment='center', 
+                    fontsize=7, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
+    plt.plot([y, root_y], [x, root_x], c='r', linewidth=0.5)
+    root_y += 100000
 
 print(readme)
 with open('README.md', 'w') as file:
     file.write(readme)
 
+plt.title(f"Sky Cover along Totality (queried_at={weather_time})")
 plt.savefig('cover.png', bbox_inches="tight")
