@@ -8,6 +8,7 @@ START_COMMIT=ef37ee811a4d94ae82a2e0803ee5f597ae7ddd47
 
 # Directory where you want to copy the files
 DEST_DIR="/tmp/cover/"
+rm -r $DEST_DIR
 
 # Create the destination directory if it doesn't exist
 mkdir -p "$DEST_DIR"
