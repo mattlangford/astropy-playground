@@ -212,7 +212,7 @@ for i, c in enumerate(centers):
 leave_time = astropy.time.Time("2024-04-08 10:00:00") # 6am the morning of
 center_traffic = []
 pit_lat, pit_lon = 40.4406, -79.9959
-center_traffic = get_travel_times(pit_lat, pit_lon, centers, leave_time)
+center_traffic = get_travel_times(pit_lat, pit_lon, centers, leave_time.to_datetime())
 center_traffic = np.array(center_traffic)
 print(center_traffic)
 
