@@ -159,7 +159,7 @@ for t in ts:
         centers.append([x, y])
         center_ts.append(t)
     
-centers = np.array(centers)
+centers = np.unique(np.array(centers), axis=0)
 print(f"{len(centers)} totality points loaded")
 
 # Query weather across the map
