@@ -245,7 +245,7 @@ y, x = m(cloud_lon, cloud_lat)
 plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
 
 y, x = m(centers[:, 1], centers[:, 0])
-mask = np.logical_and(center_covers < 100)#, center_traffic > 0)
+mask = center_covers < 100 #, center_traffic > 0)
 plt.scatter(y[mask], x[mask], c=center_covers[mask], s=70, cmap='Blues_r', vmin=0, vmax=100, edgecolors='k', linewidth=0.4, zorder=2)
 
 cbar = plt.colorbar(shrink=0.4)
