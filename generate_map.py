@@ -208,24 +208,24 @@ for i, c in enumerate(centers):
     if center_covers[i] == 100:
         center_covers[i] = query_sky_cover_safe(c[0], c[1], center_ts[i])
 
-# Query weather at each point within totality
-leave_time = astropy.time.Time("2024-04-08 10:00:00") # 6am the morning of
-center_traffic = []
+# # Query weather at each point within totality
+# leave_time = astropy.time.Time("2024-04-08 10:00:00") # 6am the morning of
+# center_traffic = []
 pit_lat, pit_lon = 40.4406, -79.9959
-center_traffic = get_travel_times(pit_lat, pit_lon, centers, leave_time.to_datetime())
-center_traffic = np.array(center_traffic)
-print(center_traffic)
-
-# Generate best targets for a few different hour drive
-best_targets = {}
-for time_hour in [3.0, 5.0, 8.0, 10.0, 12.0, 15.0]:
-    time_mask = np.logical_and(center_traffic < time_hour, center_traffic > 0.0)
-    arr = np.ma.array(center_covers, mask=~time_mask)
-    if arr.any():
-        best_index = arr.argmin()
-        best_targets[time_hour] = {'index': best_index, 'center': centers[best_index], 'cover': center_covers[best_index]}
-
-print(best_targets)
+# center_traffic = get_travel_times(pit_lat, pit_lon, centers, leave_time.to_datetime())
+# center_traffic = np.array(center_traffic)
+# print(center_traffic)
+# 
+# # Generate best targets for a few different hour drive
+# best_targets = {}
+# for time_hour in [3.0, 5.0, 8.0, 10.0, 12.0, 15.0]:
+#     time_mask = np.logical_and(center_traffic < time_hour, center_traffic > 0.0)
+#     arr = np.ma.array(center_covers, mask=~time_mask)
+#     if arr.any():
+#         best_index = arr.argmin()
+#         best_targets[time_hour] = {'index': best_index, 'center': centers[best_index], 'cover': center_covers[best_index]}
+# 
+# print(best_targets)
 
 # Plot the map, eclipse points, and weather
 
@@ -245,7 +245,7 @@ y, x = m(cloud_lon, cloud_lat)
 plt.contourf(y, x, cover, 15, cmap='Blues_r', vmin=0, vmax=100)
 
 y, x = m(centers[:, 1], centers[:, 0])
-mask = np.logical_and(center_covers < 100, center_traffic > 0)
+mask = np.logical_and(center_covers < 100)#, center_traffic > 0)
 plt.scatter(y[mask], x[mask], c=center_covers[mask], s=70, cmap='Blues_r', vmin=0, vmax=100, edgecolors='k', linewidth=0.4, zorder=2)
 
 cbar = plt.colorbar(shrink=0.4)
@@ -259,20 +259,20 @@ readme = ""
 readme += "The last sky cover plot generated:\n"
 readme += "![cover](cover.png)\n\n"
 readme += "The best targets by hour:\n"
-for duration in sorted(best_targets.keys()):
-    target = best_targets[duration]
-    readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][1]:.5f}) cover: {target['cover']}\n"
-
-root_y, root_x = m(-81.0, 43.5)
-for duration in sorted(best_targets.keys(), key=lambda i: (best_targets[i]['center'][1], i)):
-    target = best_targets[duration]
-    center = target['center']
-    y, x = m(center[1], center[0])
-    text = plt.text(root_y, root_x, f'<{duration:.0f}hr\nsk={target["cover"]}', horizontalalignment='center', verticalalignment='center', 
-                    fontsize=7, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
-    plt.plot([y, root_y], [x, root_x], c='r', linewidth=0.5)
-    root_y += 100000
-    root_x += 50000
+# for duration in sorted(best_targets.keys()):
+#     target = best_targets[duration]
+#     readme += f" - Less than {duration:.0f} hours: ({target['center'][0]:.5f}, {target['center'][1]:.5f}) cover: {target['cover']}\n"
+# 
+# root_y, root_x = m(-81.0, 43.5)
+# for duration in sorted(best_targets.keys(), key=lambda i: (best_targets[i]['center'][1], i)):
+#     target = best_targets[duration]
+#     center = target['center']
+#     y, x = m(center[1], center[0])
+#     text = plt.text(root_y, root_x, f'<{duration:.0f}hr\nsk={target["cover"]}', horizontalalignment='center', verticalalignment='center', 
+#                     fontsize=7, color='black', bbox=dict(facecolor='white', edgecolor='black', boxstyle='round'))
+#     plt.plot([y, root_y], [x, root_x], c='r', linewidth=0.5)
+#     root_y += 100000
+#     root_x += 50000
 
 print(readme)
 with open('README.md', 'w') as file:
