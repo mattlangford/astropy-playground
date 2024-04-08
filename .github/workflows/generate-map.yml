@@ -2,8 +2,8 @@ name: Generate Map
 
 on:
   # Run during normal hours
-  schedule:
-    - cron: '*/60 * * * *'
+  # schedule:
+  #   - cron: '*/60 * * * *'
   # Allow manual execution
   workflow_dispatch:
 
